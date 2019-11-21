@@ -1,11 +1,10 @@
 // devDep
 const express = require('express');
 // controllers path
-const setupCtrl = require('../controllers/setup');
+const articleCtrl = require('../controllers/article');
 
 const router = express.Router();
 
-router.get('/', setupCtrl.welcome);
-router.get('/setup', setupCtrl.setup);
+router.post('/', articleCtrl.createOne);
 
 module.exports = router;
