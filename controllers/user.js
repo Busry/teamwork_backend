@@ -28,14 +28,17 @@ exports.createUser = async (req, res, next) => {
       department,
       address,
     ]);
-
+    console.log('insert data', data);
     if (data.rowCount == 1) {
+      const id = await pool.query('SELECT userid FROM users WHERE email = $1', [
+        email,
+      ]);
       res.status(201).json({
         status: 'success',
         data: {
           message: 'User account successfully created',
           token: 'string',
-          userId: 'integer',
+          userId: id.rows[0].userid,
         },
       });
     } else {
@@ -61,5 +64,46 @@ exports.createUser = async (req, res, next) => {
         },
       });
     }
+  }
+};
+
+exports.login = async (req, res, next) => {
+  console.log(req.body, 'request body');
+  const email = req.body.email;
+  const password = req.body.password;
+  try {
+    const query = 'SELECT userId,password from users where email = $1';
+    const result = await pool.query(query, [email]);
+    if (result.rowCount == 1) {
+      console.log(result.rows[0].password, 'returned password');
+      console.log(password, 'entered password');
+      console.log(result.rows[0], 'query result');
+      const areMatch = await argon2.verify(result.rows[0].password, password);
+      if (areMatch) {
+        res.status(200).json({
+          status: 'success',
+          data: {
+            token: 'string',
+            userId: result.rows[0].userid,
+          },
+        });
+      } else {
+        res.status(400).json({
+          status: 'failed',
+          data: {
+            message: 'Password incorrect',
+          },
+        });
+      }
+    } else {
+      res.status(400).json({
+        status: 'failed',
+        data: {
+          message: 'email not found',
+        },
+      });
+    }
+  } catch (err) {
+    console.log('ERROR ' + err);
   }
 };
