@@ -1,9 +1,10 @@
-const pool = require('../models/pool');
 const argon2 = require('argon2');
-
-let hash;
+const jwt = require('jsonwebtoken');
+const pool = require('../models/pool');
 
 exports.createUser = async (req, res, next) => {
+  let hash;
+
   const firstName = req.body.firstName;
   const lastName = req.body.lastName;
   const email = req.body.email;
@@ -37,7 +38,7 @@ exports.createUser = async (req, res, next) => {
         status: 'success',
         data: {
           message: 'User account successfully created',
-          token: 'string',
+          token: 'new-user',
           userId: id.rows[0].userid,
         },
       });
@@ -46,8 +47,6 @@ exports.createUser = async (req, res, next) => {
         status: 'failed',
         data: {
           message: 'User not created',
-          token: 'string',
-          userId: 'integer',
         },
       });
     }
@@ -59,8 +58,6 @@ exports.createUser = async (req, res, next) => {
         status: 'failed',
         data: {
           message: 'User with this email already exist',
-          token: 'string',
-          userId: 'integer',
         },
       });
     }
@@ -80,10 +77,15 @@ exports.login = async (req, res, next) => {
       console.log(result.rows[0], 'query result');
       const areMatch = await argon2.verify(result.rows[0].password, password);
       if (areMatch) {
+        const token = jwt.sign(
+          { userId: result.rows[0].userid },
+          'RANDOM_TOKEN_SECRET',
+          { expiresIn: '24h' }
+        );
         res.status(200).json({
           status: 'success',
           data: {
-            token: 'string',
+            token: token,
             userId: result.rows[0].userid,
           },
         });
