@@ -7,6 +7,7 @@ const articleCtrl = require('../controllers/article');
 
 const router = express.Router();
 
+router.get('/', auth, articleCtrl.allArticles);
 router.post('/', auth, articleCtrl.createOne);
 
 module.exports = router;

@@ -45,9 +45,7 @@ exports.createUser = async (req, res, next) => {
     } else {
       res.status(400).json({
         status: 'failed',
-        data: {
-          message: 'User not created',
-        },
+        error: 'User not created',
       });
     }
   } catch (err) {
@@ -56,9 +54,7 @@ exports.createUser = async (req, res, next) => {
     if (err.message.search('duplicate') != -1) {
       res.status(400).json({
         status: 'failed',
-        data: {
-          message: 'User with this email already exist',
-        },
+        error: 'User with this email already exist',
       });
     }
   }
@@ -91,18 +87,14 @@ exports.login = async (req, res, next) => {
         });
       } else {
         res.status(400).json({
-          status: 'failed',
-          data: {
-            message: 'Password incorrect',
-          },
+          status: 'Denied access',
+          error: 'Incorrect password',
         });
       }
     } else {
       res.status(400).json({
         status: 'failed',
-        data: {
-          message: 'email not found',
-        },
+        error: 'email not found',
       });
     }
   } catch (err) {
