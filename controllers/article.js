@@ -32,7 +32,7 @@ exports.createOne = async (req, res, next) => {
 
 exports.allArticles = async (req, res, next) => {
   try {
-    const template = 'SELECT * FROM articles';
+    const template = 'SELECT * FROM articles ORDER BY createdon DESC';
     const response = await pool.query(template);
     res.status(200).json({
       status: 'success',
