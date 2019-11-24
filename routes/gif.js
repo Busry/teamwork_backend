@@ -6,5 +6,6 @@ const router = express.Router();
 const gifCtrl = require('../controllers/gif');
 
 router.post('/', gifCtrl.saveGif);
+router.delete('/:id', gifCtrl.removeGif);
 
 module.exports = router;
