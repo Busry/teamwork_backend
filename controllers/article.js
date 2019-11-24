@@ -6,13 +6,14 @@ exports.createOne = async (req, res, next) => {
   const title = req.body.title;
   const article = req.body.article;
 
-  const now = new Date();
-  const createdon = now.toISOString();
-
   try {
     const template =
       'INSERT INTO articles (title, article, createdon) VALUES ($1, $2, $3)';
-    const inserted = await pool.query(template, [title, article, createdon]);
+    const inserted = await pool.query(template, [
+      title,
+      article,
+      new Date().toISOString(),
+    ]);
     const selectTemplate =
       'SELECT * FROM articles WHERE title = $1 AND article = $2 AND createdon = $3';
     const tuple = await pool.query(selectTemplate, [title, article, createdon]);
