@@ -7,6 +7,7 @@ exports.saveGif = async (req, res, next) => {
     // const saveOptions = {
     //   public_id: `teamwork/${gif.name}`,
     // };
+    const { userId } = res.locals;
 
     const imageInfo = await cloudinary.uploader.upload(
       gif.tempFilePath,
@@ -20,9 +21,9 @@ exports.saveGif = async (req, res, next) => {
     const createdOn = imageInfo.created_at;
 
     const insert =
-      'INSERT INTO gifs (title, imageurl, createdon) VALUES ($1, $2, $3) RETURNING gifid';
+      'INSERT INTO gifs (title, imageurl, createdon, authorid) VALUES ($1, $2, $3, $4) RETURNING gifid';
 
-    const id = await pool.query(insert, [title, imageUrl, createdOn]);
+    const id = await pool.query(insert, [title, imageUrl, createdOn, userId]);
 
     res.status(200).json({
       status: 'success',

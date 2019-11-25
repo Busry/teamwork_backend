@@ -5,11 +5,17 @@ exports.createComment = async (req, res, next) => {
     const article_id = req.params.id;
     const comment = req.body.comment;
     const createdOn = new Date().toISOString();
+    const { userId } = res.locals;
 
     const template =
-      'INSERT INTO comments (comment, createdon,articleid) VALUES ($1, $2, $3) RETURNING commentid';
+      'INSERT INTO comments (comment, createdon,articleid, authorid) VALUES ($1, $2, $3, $4) RETURNING commentid';
 
-    const id = await pool.query(template, [comment, createdOn, article_id]);
+    const id = await pool.query(template, [
+      comment,
+      createdOn,
+      article_id,
+      userId,
+    ]);
     const search = 'SELECT * FROM articles WHERE articleid = $1 ';
 
     const tuple = await pool.query(search, [article_id]);
