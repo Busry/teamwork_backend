@@ -44,11 +44,12 @@ exports.gifcomment = async (req, res, next) => {
     const gif_id = req.params.id;
     const comment = req.body.comment;
     const createdOn = new Date().toISOString();
+    const { userId } = res.locals;
 
     const template =
-      'INSERT INTO comments (comment, createdon,gifid) VALUES ($1, $2, $3) RETURNING commentid';
+      'INSERT INTO comments (comment, createdon,gifid, authorid) VALUES ($1, $2, $3, $4) RETURNING commentid';
 
-    const id = await pool.query(template, [comment, createdOn, gif_id]);
+    const id = await pool.query(template, [comment, createdOn, gif_id, userId]);
     const search = 'SELECT * FROM gifs WHERE gifid = $1 ';
 
     const tuple = await pool.query(search, [gif_id]);

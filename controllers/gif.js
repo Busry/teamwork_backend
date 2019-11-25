@@ -72,3 +72,32 @@ exports.removeGif = async (req, res, next) => {
     });
   }
 };
+
+exports.viewGif = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const gifTemplate = `SELECT * FROM gifs WHERE gifs.gifid = $1`;
+    const gifinfo = await pool.query(gifTemplate, [id]);
+    const gif = gifinfo.rows[0];
+    const commentTemplate = `SELECT commentid,comment,authorid FROM comments WHERE comments.gifid = $1`;
+    const commentsinfo = await pool.query(commentTemplate, [id]);
+    // response.rows,
+    res.status(200).json({
+      status: 'success',
+      data: {
+        id: gif.gifid,
+        createdOn: gif.createdon,
+        title: gif.title,
+        url: gif.imageurl,
+        comments: commentsinfo.rows,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'error',
+      error: 'gif post not found',
+      log: err,
+    });
+  }
+};

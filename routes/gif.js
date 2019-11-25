@@ -8,6 +8,7 @@ const commentCtrl = require('../controllers/comment');
 const auth = require('../middleware/auth');
 
 router.post('/', auth, gifCtrl.saveGif);
+router.get('/:id', auth, gifCtrl.viewGif);
 router.delete('/:id', auth, gifCtrl.removeGif);
 router.post('/:id/comments', auth, commentCtrl.gifcomment);
 
