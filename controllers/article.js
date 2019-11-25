@@ -8,11 +8,12 @@ exports.createOne = async (req, res, next) => {
     const title = req.body.title;
     const article = req.body.article;
     const createdOn = new Date().toISOString();
+    const { userId } = res.locals;
 
     console.log('before template');
-    const template =
-      'INSERT INTO articles (title, article, createdon) VALUES ($1, $2, $3) RETURNING articleid';
-    const id = await pool.query(template, [title, article, createdOn]);
+    const template = `INSERT INTO articles (title, article, createdon, authorid) VALUES ($1, $2, $3, $4) RETURNING articleid`;
+    const id = await pool.query(template, [title, article, createdOn, userId]);
+
     console.log('before response');
     res.status(200).json({
       status: 'success',
@@ -90,6 +91,34 @@ exports.deleteArticle = async (req, res, next) => {
     res.status(400).json({
       status: 'error',
       error: 'Not able to delete',
+    });
+  }
+};
+exports.viewArticle = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const articleTemplate = `SELECT * FROM articles WHERE articles.articleid = $1`;
+    const articleinfo = await pool.query(articleTemplate, [id]);
+    const article = articleinfo.rows[0];
+    const commentTemplate = `SELECT commentid,comment,authorid FROM comments WHERE comments.articleid = $1`;
+    const commentsinfo = await pool.query(commentTemplate, [id]);
+    // response.rows,
+    res.status(200).json({
+      status: 'success',
+      data: {
+        id: article.articleid,
+        createdOn: article.createdon,
+        title: article.title,
+        article: article.article,
+        comments: commentsinfo.rows,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'error',
+      error: 'article found',
+      log: err,
     });
   }
 };

@@ -11,6 +11,7 @@ const router = express.Router();
 router.get('/', auth, articleCtrl.allArticles);
 router.post('/', auth, articleCtrl.createOne);
 router.put('/:id', auth, articleCtrl.editArticle);
+router.get('/:id', auth, articleCtrl.viewArticle);
 router.delete('/:id', auth, articleCtrl.deleteArticle);
 router.post('/:id/comments', auth, commentCtrl.createComment);
 
