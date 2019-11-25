@@ -6,6 +6,7 @@ const fileupload = require('express-fileupload');
 const articleRoute = require('./routes/article');
 const authRoute = require('./routes/auth');
 const gifRoute = require('./routes/gif');
+const feedRoute = require('./routes/feed');
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.use(bodyParser.json());
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/gifs', gifRoute);
 app.use('/api/v1/articles', articleRoute);
+app.use('/api/v1/feed', feedRoute);
 
 module.exports = app;
