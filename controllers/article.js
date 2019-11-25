@@ -9,15 +9,10 @@ exports.createOne = async (req, res, next) => {
     const article = req.body.article;
     const createdOn = new Date().toISOString();
 
-  
     console.log('before template');
     const template =
       'INSERT INTO articles (title, article, createdon) VALUES ($1, $2, $3) RETURNING articleid';
-    const id = await pool.query(template, [
-      title,
-      article,
-      createdOn,
-    ]);
+    const id = await pool.query(template, [title, article, createdOn]);
     console.log('before response');
     res.status(200).json({
       status: 'success',
@@ -59,14 +54,10 @@ exports.editArticle = async (req, res, next) => {
     const title = req.body.title;
     const article = req.body.article;
     const id = req.params.id;
-    
+
     const template =
       'UPDATE articles SET title = $1, article = $2  WHERE articleid = $3';
-    const updates = await pool.query(template, [
-      title,
-      article,
-      id,
-    ]);
+    const updates = await pool.query(template, [title, article, id]);
     res.status(200).json({
       status: 'success',
       data: {
@@ -75,7 +66,6 @@ exports.editArticle = async (req, res, next) => {
         article: article,
       },
     });
-    
   } catch (err) {
     res.status(400).json({
       status: 'error',
@@ -83,20 +73,19 @@ exports.editArticle = async (req, res, next) => {
       log: err,
     });
   }
-}
+};
 
 exports.deleteArticle = async (req, res, next) => {
   try {
     const id = req.params.id;
 
     const template = 'DELETE FROM articles WHERE articleid = $1';
-    const response = await pool.query(template,[id]);
+    const response = await pool.query(template, [id]);
 
     res.status(200).json({
       status: 'success',
       data: 'article successfully delete',
     });
-
   } catch (err) {
     res.status(400).json({
       status: 'error',
