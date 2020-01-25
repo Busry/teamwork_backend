@@ -34,11 +34,16 @@ exports.createUser = async (req, res, next) => {
       const id = await pool.query('SELECT userid FROM users WHERE email = $1', [
         email,
       ]);
+      const token = jwt.sign(
+        { userId: result.rows[0].userid },
+        'RANDOM_TOKEN_SECRET',
+        { expiresIn: '24h' }
+      );
       res.status(201).json({
         status: 'success',
         data: {
           message: 'User account successfully created',
-          token: 'new-user',
+          token: token,
           userId: id.rows[0].userid,
         },
       });
